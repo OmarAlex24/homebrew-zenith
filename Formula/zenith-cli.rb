@@ -1,9 +1,8 @@
-class Zenith < Formula
+class ZenithCli < Formula
   desc "Local-first project memory and agent coordination CLI"
   homepage "https://github.com/OmarAlex24/zenith-cli"
   version "0.1.0"
 
-  depends_on "bun"
   depends_on :macos
 
   url "https://github.com/OmarAlex24/zenith-cli/releases/download/v#{version}/zenith-darwin-arm64.tar.gz"
@@ -15,7 +14,11 @@ class Zenith < Formula
     libexec.install "node_modules"
     (bin/"zenith").write <<~SH
       #!/bin/sh
-      exec "#{Formula["bun"].opt_bin}/bun" "#{libexec}/zenith.js" "$@"
+      if ! command -v bun >/dev/null 2>&1; then
+        echo "Zenith requires Bun on PATH. Install with: brew install oven-sh/bun/bun" >&2
+        exit 127
+      fi
+      exec bun "#{libexec}/zenith.js" "$@"
     SH
   end
 
